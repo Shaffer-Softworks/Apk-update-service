@@ -1,5 +1,5 @@
 name: APK Update Service
-version: "0.1.0"
+version: "0.1.1"
 slug: apk_update_service
 description: >-
   Self-hosted Android APK update server. Subscribes to a webhookrelay bucket
@@ -9,8 +9,6 @@ url: https://github.com/Shaffer-Softworks/apk-update-service-addon
 arch:
   - aarch64
   - amd64
-  - armv7
-  - armhf
 init: false
 startup: services
 boot: auto

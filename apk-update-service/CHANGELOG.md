@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.1
+
+- Add `build.yaml` mapping each supported architecture to its Home Assistant base image so the Supervisor can populate the `BUILD_FROM` ARG (previous build failed with `base name (${BUILD_FROM}) should not be blank`).
+- Drop deprecated `armv7` and `armhf` architectures from `config.yaml`; the addon now declares `aarch64` and `amd64` only, matching the modern Home Assistant supported arch list.
+
 ## 0.1.0
 
 - Initial release. Ports the Node-RED APK update flow to a Home Assistant addon.
