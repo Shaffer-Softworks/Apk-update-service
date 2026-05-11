@@ -1,0 +1,18 @@
+configuration:
+  webhookrelay:
+    name: Webhookrelay credentials
+    description: Connection info for the webhookrelay.com bucket that receives your GitHub release webhooks.
+  github_token:
+    name: GitHub token
+    description: Personal access token with read access to the repository's release assets. Used to authenticate downloads of release asset binaries.
+  download_base_url:
+    name: Public download base URL
+    description: Optional. Public URL (scheme + host, no trailing slash) that Android clients use to reach this addon. When blank, the URL is derived from the incoming request.
+  flavors:
+    name: Flavors
+    description: List of APK flavors to track. Each flavor matches release assets whose filename matches the regex in `filename_pattern`.
+  log_level:
+    name: Log level
+    description: Verbosity of the addon log output.
+network:
+  "8099/tcp": HTTP port for the APK update API. Expose on your LAN so Android devices can reach /api/latest.json and /api/download/<file>.

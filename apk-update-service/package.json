@@ -1,0 +1,21 @@
+{
+  "name": "apk-update-service",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Home Assistant addon that serves Android APK updates from GitHub releases via webhookrelay.",
+  "main": "src/index.js",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "OPTIONS_FILE=./dev-options.json APK_DIR=./dev-data/apks STATE_FILE=./dev-data/state.json node src/index.js"
+  },
+  "dependencies": {
+    "express": "^4.21.0",
+    "pino": "^9.5.0",
+    "pino-pretty": "^11.2.2",
+    "ws": "^8.18.0",
+    "zod": "^3.23.8"
+  }
+}

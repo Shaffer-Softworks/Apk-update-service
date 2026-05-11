@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>APK Update Service</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <h1>APK Update Service</h1>
+      <div class="status" id="status">
+        <span class="dot" id="statusDot"></span>
+        <span id="statusText">Loading...</span>
+      </div>
+    </header>
+
+    <section class="card">
+      <h2>Current release</h2>
+      <dl class="kv">
+        <dt>versionCode</dt><dd id="versionCode">—</dd>
+        <dt>versionName</dt><dd id="versionName">—</dd>
+        <dt>Last event</dt><dd id="lastEvent">—</dd>
+      </dl>
+    </section>
+
+    <section class="card">
+      <h2>Flavors</h2>
+      <table id="flavors">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Pattern</th>
+            <th>File</th>
+            <th>SHA-256</th>
+            <th>Downloaded</th>
+            <th>latest.json</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>Actions</h2>
+      <button id="refreshBtn" type="button">Reload state</button>
+      <button id="reconnectBtn" type="button">Reconnect webhookrelay</button>
+      <p class="hint">
+        Public endpoints (Android clients use these):
+        <code>/api/latest.json?flavor=&lt;id&gt;</code> and
+        <code>/api/download/&lt;file&gt;</code>.
+      </p>
+    </section>
+
+    <script src="app.js"></script>
+  </body>
+</html>
