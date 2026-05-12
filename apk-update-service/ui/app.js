@@ -21,6 +21,19 @@ const fmtDate = (iso) => {
 };
 const truncate = (s, n = 12) => (s && s.length > n ? `${s.slice(0, n)}…` : s || "");
 
+function fmtBytes(n) {
+  if (n == null || Number.isNaN(n)) return "—";
+  const u = ["B", "KB", "MB", "GB"];
+  let v = Number(n);
+  let i = 0;
+  while (v >= 1024 && i < u.length - 1) {
+    v /= 1024;
+    i += 1;
+  }
+  const d = i === 0 ? 0 : v < 10 ? 1 : v < 100 ? 1 : 0;
+  return `${v.toFixed(d)} ${u[i]}`;
+}
+
 function setStatus({ connected, authenticated, subscribed, lastError }) {
   const dot = $("statusDot");
   const text = $("statusText");
@@ -70,9 +83,40 @@ function renderFlavors({ flavors, state }) {
   }
 }
 
+function renderApkFiles(files, errorMessage) {
+  const tbody = document.querySelector("#apkFiles tbody");
+  tbody.innerHTML = "";
+  if (errorMessage) {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td colspan="4" class="empty">${errorMessage}</td>`;
+    tbody.appendChild(tr);
+    return;
+  }
+  if (!files.length) {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td colspan="4" class="empty">No APK files in storage</td>`;
+    tbody.appendChild(tr);
+    return;
+  }
+  for (const f of files) {
+    const href = `${window.location.origin}${publicApiBase}/download/${encodeURIComponent(f.name)}`;
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td><code>${f.name}</code></td>
+      <td>${fmtBytes(f.size)}</td>
+      <td>${fmtDate(new Date(f.mtimeMs).toISOString())}</td>
+      <td class="actions"><a class="download-link" href="${href}" download>Download</a></td>
+    `;
+    tbody.appendChild(tr);
+  }
+}
+
 async function loadState() {
+  const stateP = fetch(apiBase + "/state", { headers: { Accept: "application/json" } });
+  const filesP = fetch(apiBase + "/files", { headers: { Accept: "application/json" } });
+
   try {
-    const res = await fetch(apiBase + "/state", { headers: { Accept: "application/json" } });
+    const res = await stateP;
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
     setStatus(data.webhookrelay || {});
@@ -83,6 +127,15 @@ async function loadState() {
   } catch (err) {
     $("statusText").textContent = `Error: ${err.message}`;
     $("statusDot").className = "dot err";
+  }
+
+  try {
+    const fres = await filesP;
+    if (!fres.ok) throw new Error(`HTTP ${fres.status}`);
+    const fdata = await fres.json();
+    renderApkFiles(fdata.files || [], null);
+  } catch (err) {
+    renderApkFiles([], `Could not list files: ${err.message}`);
   }
 }
 

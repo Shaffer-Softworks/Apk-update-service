@@ -18,14 +18,21 @@ clients over a small HTTP API.
      `/data/apks/<original-filename>`.
    - Persists per-flavor state (filename, sha256, timestamp) to
      `/data/state.json`.
-3. Serves three endpoints:
+3. Serves the public Android API and a small admin API for the Ingress UI:
    - `GET /api/latest.json?flavor=<id>` — JSON metadata for the Android
      in-app updater.
    - `GET /api/download/<file>` — the APK binary with the correct
      `Content-Type` and `Content-Disposition` for Android.
-   - Home Assistant Ingress UI — a small dashboard showing webhookrelay
-     status, current `versionCode`/`versionName`, and per-flavor download
-     state, plus a "Reconnect" button.
+   - `GET /api/admin/state` — JSON used by the dashboard (webhookrelay
+     status, `versionCode` / `versionName`, per-flavor state, paths).
+   - `GET /api/admin/files` — JSON list of `.apk` files in persistent
+     storage (`name`, `size`, `mtimeMs`), newest first; same filename
+     safety rules as `/api/download/<file>`.
+   - `POST /api/admin/refresh` — asks the service to reconnect webhookrelay.
+   - Home Assistant Ingress UI — static page that calls the admin routes,
+     shows current release info, **File management** (list + download links
+     for each APK on disk), per-flavor table with latest.json copy, and
+     Reload / Reconnect actions.
 
 ## Installation
 
@@ -120,6 +127,22 @@ Response:
 Download the APK with a plain `GET` on `apkUrl`. The response has
 `Content-Type: application/vnd.android.package-archive` and a
 `Content-Disposition` filename.
+
+## Ingress dashboard and admin JSON
+
+The Open Web UI page (same port as the API) loads static assets and calls:
+
+| Method | Path | Purpose |
+| --- | --- | --- |
+| `GET` | `/api/admin/state` | Dashboard data: webhookrelay status, release fields, per-flavor state, configured flavor ids/patterns |
+| `GET` | `/api/admin/files` | `{ "files": [ … ] }` — each entry has `name`, `size`, `mtimeMs` for `.apk` files in storage |
+| `POST` | `/api/admin/refresh` | Trigger webhookrelay reconnect |
+
+The UI renders **File management** from `/api/admin/files` and uses
+`/api/download/<filename>` for each **Download** link so behavior matches
+Android clients. There is no separate authentication layer on these routes;
+they are only as exposed as your Home Assistant port mapping and Ingress
+settings allow.
 
 ## Storage layout
 

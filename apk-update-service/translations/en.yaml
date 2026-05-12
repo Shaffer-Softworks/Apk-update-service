@@ -15,4 +15,4 @@ configuration:
     name: Log level
     description: Verbosity of the addon log output.
 network:
-  "8099/tcp": HTTP port for the APK update API. Expose on your LAN so Android devices can reach /api/latest.json and /api/download/<file>.
+  "8099/tcp": HTTP port for the APK update API and Ingress dashboard (latest.json, download, admin state/files). Expose on your LAN so Android devices can reach /api/latest.json and /api/download/<file>.
