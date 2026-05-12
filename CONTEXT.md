@@ -2,6 +2,8 @@
 
 Working notes for picking this project back up. Not part of the addon build.
 
+_Last doc pass: 2026-05-12 — file management UI + `GET /api/admin/files`._
+
 ## Goal
 
 Replace the Node-RED "APK Update Service" flow with a self-contained Home
@@ -15,7 +17,8 @@ Assistant addon. The addon:
   redirect-followed S3 fetch) into `/data/apks/<filename>`.
 - Serves `GET /api/latest.json?flavor=<id>` and `GET /api/download/<file>`
   for in-app Android self-updaters.
-- Shows status in a small HA Ingress UI.
+- Shows status in a small HA Ingress UI, including a **File management**
+  section that lists APKs on disk and links to the public download URL.
 
 QR-code provisioning from the original Node-RED flow was intentionally
 dropped.
@@ -31,8 +34,10 @@ All ten todos from the plan are completed and the code is in place:
   - `src/index.js`, `server.js`, `config.js`, `state.js`, `log.js`,
     `flavors.js`, `webhookrelay.js`, `releaseHandler.js`,
     `githubDownload.js`
-  - `src/routes/latestJson.js`, `download.js`, `adminApi.js`
-  - `ui/index.html`, `app.js`, `style.css`
+  - `src/routes/latestJson.js`, `download.js`, `adminApi.js` (includes
+    `GET /api/admin/files` to list `.apk` files in `APK_DIR`)
+  - `ui/index.html`, `app.js`, `style.css` (File management table + download
+    links to `/api/download/<file>`)
   - `translations/en.yaml`, `README.md`, `CHANGELOG.md`
 - Plan file lives at
   `/Users/michaelshaffer/.cursor/plans/apk_update_ha_addon_d8f8419a.plan.md`
@@ -158,7 +163,9 @@ function matches(name, flavor) {
 - `state.js` uses tmp-file-and-rename for atomic writes and serializes
   writes through a chained promise.
 - The download route's filename guard is strict `^[A-Za-z0-9._-]+$` plus
-  a resolved-path-prefix check against the APK dir.
+  a resolved-path-prefix check against the APK dir. The admin
+  `GET /api/admin/files` handler uses the same rules and only returns
+  regular files whose names end in `.apk`, sorted by `mtime` descending.
 - `webhookrelay.js` sends `{action:"auth",key,secret}` then
   `{action:"subscribe",buckets:[bucket]}`, pings every 25s, exponential
   backoff up to 60s.
@@ -178,3 +185,8 @@ function matches(name, flavor) {
 - From the Android device, `curl http://<ha-host>:8099/api/latest.json?flavor=keypad`
   should return JSON with the right `apkUrl` and `sha256`.
 - `curl -OJ http://<ha-host>:8099/api/download/<file>` downloads the APK.
+- Ingress **File management** lists stored APKs; each row's Download link
+  should start a browser download (same URL Android clients use).
+- `GET http://<ha-host>:8099/api/admin/files` (JSON) should list
+  `{ name, size, mtimeMs }` for each stored `.apk` when probed from the
+  LAN or via Ingress (same origin as the UI).

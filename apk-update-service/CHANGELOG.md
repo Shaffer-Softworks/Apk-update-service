@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Ingress UI: **File management** section lists APKs under `/data/apks` (or `APK_DIR`) with size, modified time, and **Download** links to `GET /api/download/<file>` (same URL Android clients use).
+- Admin API: `GET /api/admin/files` returns `{ "files": [ { "name", "size", "mtimeMs" } ] }` for safe `.apk` filenames only.
+
 ## 0.1.1
 
 - Add `build.yaml` mapping each supported architecture to its Home Assistant base image so the Supervisor can populate the `BUILD_FROM` ARG (previous build failed with `base name (${BUILD_FROM}) should not be blank`).

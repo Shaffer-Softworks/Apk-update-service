@@ -91,3 +91,15 @@ button.secondary { background: transparent; color: var(--accent); border: 1px so
 .hint { color: var(--muted); font-size: 0.85rem; margin-top: 0.75rem; }
 .empty { color: var(--muted); font-style: italic; }
 .copy-btn { background: transparent; color: var(--accent); border: 1px solid var(--border); padding: 0.2rem 0.5rem; font-size: 0.8rem; }
+.file-mgmt-hint { margin-bottom: 0.75rem; }
+td.actions { white-space: nowrap; }
+td.actions a.download-link {
+  display: inline-block;
+  background: var(--accent);
+  color: white;
+  border-radius: 6px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.85rem;
+  text-decoration: none;
+}
+td.actions a.download-link:hover { filter: brightness(1.08); }
