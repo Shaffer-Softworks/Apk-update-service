@@ -1,11 +1,11 @@
 name: APK Update Service
-version: "1.1.1"
+version: "1.1.2"
 slug: apk_update_service
 description: >-
   Self-hosted Android APK update server. Subscribes to a webhookrelay bucket
   for new GitHub releases, downloads APK assets, and serves /api/latest.json
   and /api/download/<file> for in-app self-updaters. Ingress UI includes file
-  management with download links for stored APKs.
+  management with download links for stored APKs. Custom store icon (icon.png).
 url: https://github.com/Shaffer-Softworks/apk-update-service-addon
 arch:
   - aarch64

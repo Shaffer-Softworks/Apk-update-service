@@ -1,6 +1,10 @@
 # APK Update Service
 
-Home Assistant addon that replaces the Node-RED "APK Update Service" flow.
+Home Assistant add-on that replaces the Node-RED "APK Update Service" flow.
+Supervisor-visible **version** is declared in this folder’s `config.yaml`
+(`version` key); `package.json` uses the same number in this repository for
+reference.
+
 It subscribes to a [webhookrelay.com](https://webhookrelay.com) bucket over
 WebSocket, listens for GitHub release events, downloads the matching APK
 assets into the addon's persistent storage, and serves them to your Android
@@ -42,6 +46,8 @@ This is a single-addon repository. In Home Assistant:
 2. Add the URL of the Git repository that contains this folder.
 3. Refresh; the addon "APK Update Service" appears under the new repository.
 4. Install, configure (see below), then start.
+
+The add-on ships `icon.png` (256×256) next to `config.yaml` for the Supervisor store and sidebar. If the icon stays the generic puzzle piece after an update, try **Reload** on the add-on store page or a full browser refresh.
 
 The addon exposes TCP port `8099`. Map it to a stable LAN port (default is
 also `8099`) so Android devices can reach `http://<ha-host>:8099/api/...`.
@@ -149,6 +155,8 @@ settings allow.
 - `/data/options.json` — written by Home Assistant from your configuration.
 - `/data/state.json` — per-flavor state, atomic writes.
 - `/data/apks/<filename>.apk` — downloaded assets.
+- In the **git repository** (not inside the container): `icon.png` next to
+  `config.yaml` — used by the Supervisor for the add-on store and sidebar.
 
 ## Differences from the Node-RED flow
 
