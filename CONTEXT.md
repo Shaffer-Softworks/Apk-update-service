@@ -2,7 +2,8 @@
 
 Working notes for picking this project back up. Not part of the addon build.
 
-_Last doc pass: 2026-05-12 — file management UI + `GET /api/admin/files`._
+_Last doc pass: 2026-05-12 — file management UI, `GET /api/admin/files`, add-on
+`icon.png`, changelog/README aligned with Supervisor version `1.1.2`._
 
 ## Goal
 
@@ -29,7 +30,8 @@ All ten todos from the plan are completed and the code is in place:
 
 - `repository.yaml`
 - `apk-update-service/`
-  - `config.yaml`, `build.yaml`, `Dockerfile`, `run.sh`
+  - `config.yaml`, `build.yaml`, `Dockerfile`, `run.sh`, `icon.png` (256×256
+    add-on icon for Home Assistant)
   - `package.json` (deps: `express`, `ws`, `pino`, `pino-pretty`, `zod`)
   - `src/index.js`, `server.js`, `config.js`, `state.js`, `log.js`,
     `flavors.js`, `webhookrelay.js`, `releaseHandler.js`,
@@ -45,9 +47,14 @@ All ten todos from the plan are completed and the code is in place:
 
 ## Versioning
 
-Currently `0.1.1`. `0.1.0` failed to build in HA Supervisor because
-`BUILD_FROM` was empty — fixed in `0.1.1` by adding `build.yaml` and
-dropping deprecated `armv7`/`armhf` from the `arch:` list.
+**Supervisor-visible version** is `apk-update-service/config.yaml` →
+`version` (currently **`1.1.2`**). **`package.json`** `version` is kept in
+sync in this repo for maintainers; it does not drive the Home Assistant UI
+by itself.
+
+Older npm-era tags (`0.1.0`, `0.1.1`): `0.1.0` failed to build in HA
+Supervisor because `BUILD_FROM` was empty — fixed in `0.1.1` by adding
+`build.yaml` and dropping deprecated `armv7`/`armhf` from the `arch:` list.
 
 `build.yaml` pins the base image to:
 
@@ -61,11 +68,14 @@ build_from:
 
 ## Repo / deploy path
 
-The user is publishing this addon to
-`https://github.com/sickkick/Apk-update-service` and installing it via
-Home Assistant's "Add repository" flow. After any change here:
+Canonical repository URL for this add-on is whatever is set in
+`apk-update-service/config.yaml` under **`url`** (currently the
+Shaffer-Softworks GitHub add-on repo). An older fork path may still appear
+in local notes; treat `config.yaml` as source of truth.
 
-1. Push to that GitHub repo.
+After any change here:
+
+1. Push to the Git remote you use for the HA "Add repository" flow.
 2. In HA: Settings → Add-ons → Store → ⋮ → Reload.
 3. Open APK Update Service; install (will pull current version) or
    update if it's already installed.
@@ -89,7 +99,9 @@ panel_title: APK Updates
 
 The page opened by that button is served by Express in
 `apk-update-service/src/server.js`, which statically serves
-`apk-update-service/ui/index.html`, `app.js`, and `style.css`.
+`apk-update-service/ui/` (`index.html`, `app.js`, `style.css`). The
+add-on store icon `icon.png` lives beside `config.yaml` for the Supervisor
+only; it is not copied into the Docker image.
 
 ## Configuration the user is filling in
 
@@ -142,7 +154,8 @@ Next time, pick one and update:
 - `apk-update-service/ui/app.js` (column header / display of the pattern).
 - `apk-update-service/translations/en.yaml`.
 - `apk-update-service/README.md` (options reference + examples).
-- Bump version to `0.2.0` and add a CHANGELOG entry.
+- Bump add-on `version` in `config.yaml` (and `package.json` if you keep
+  them aligned) and add a `CHANGELOG.md` entry.
 
 If the user picks option 1 (most likely), the matching function becomes:
 
@@ -190,3 +203,6 @@ function matches(name, flavor) {
 - `GET http://<ha-host>:8099/api/admin/files` (JSON) should list
   `{ name, size, mtimeMs }` for each stored `.apk` when probed from the
   LAN or via Ingress (same origin as the UI).
+- After publishing a new git revision, the add-on store shows the custom
+  **icon** from `icon.png` (reload the store / hard-refresh if it still
+  shows the generic puzzle piece).

@@ -1,7 +1,8 @@
 # Changelog
 
-## Unreleased
+## 1.1.2
 
+- Ship `icon.png` (256×256 PNG) beside `config.yaml` so Home Assistant shows a custom add-on icon instead of the default puzzle piece.
 - Ingress UI: **File management** section lists APKs under `/data/apks` (or `APK_DIR`) with size, modified time, and **Download** links to `GET /api/download/<file>` (same URL Android clients use).
 - Admin API: `GET /api/admin/files` returns `{ "files": [ { "name", "size", "mtimeMs" } ] }` for safe `.apk` filenames only.
 
@@ -20,7 +21,3 @@
 - Minimal ingress UI showing per-flavor state and a webhookrelay reconnect button.
 - Flavors are user-configurable and matched to release assets by filename regex (replaces the brittle `assets[0|1|2]` indexing in the Node-RED flow).
 - QR-code provisioning endpoint is intentionally not ported.
-
-### Known follow-ups
-
-- No `icon.png`/`logo.png` shipped yet; Home Assistant uses its generic addon icon. Drop a 250x250 PNG named `icon.png` next to `config.yaml` to override.
