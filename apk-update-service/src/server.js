@@ -7,7 +7,7 @@ const latestJsonRoute = require("./routes/latestJson");
 const downloadRoute = require("./routes/download");
 const adminApiRoute = require("./routes/adminApi");
 
-function createApp({ config, state, logger, webhookrelay }) {
+function createApp({ config, state, logger, webhookrelay, githubDownload, enqueueRelease }) {
   const app = express();
   app.disable("x-powered-by");
   app.set("trust proxy", true);
@@ -37,7 +37,10 @@ function createApp({ config, state, logger, webhookrelay }) {
 
   app.use("/api/latest.json", latestJsonRoute({ config, state }));
   app.use("/api/download", downloadRoute({ config, logger }));
-  app.use("/api/admin", adminApiRoute({ config, state, logger, webhookrelay }));
+  app.use(
+    "/api/admin",
+    adminApiRoute({ config, state, logger, webhookrelay, githubDownload, enqueueRelease })
+  );
 
   const uiDir = path.resolve(__dirname, "..", "ui");
   app.use("/", express.static(uiDir, { index: "index.html", extensions: ["html"] }));

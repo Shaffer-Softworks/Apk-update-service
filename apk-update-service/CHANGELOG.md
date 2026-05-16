@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.1.3
+
+- Fix GitHub asset downloads failing with transient TLS/SSL errors by using Node
+  `https` instead of `fetch`, with retries and backoff.
+- Serialize release webhook handling so duplicate events do not open parallel
+  downloads to GitHub.
+- Admin: `POST /api/admin/sync-release` fetches the latest GitHub release and
+  downloads APKs (recovery when a webhook succeeded but downloads failed).
+- Docker image: install `ca-certificates` for reliable HTTPS.
+
 ## 1.1.2
 
 - Ship `icon.png` (256×256 PNG) beside `config.yaml` so Home Assistant shows a custom add-on icon instead of the default puzzle piece.

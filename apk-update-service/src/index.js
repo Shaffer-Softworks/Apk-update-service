@@ -42,13 +42,32 @@ async function main() {
     logger: logger.child({ module: "release" }),
   });
 
+  let releaseQueue = Promise.resolve();
+  function enqueueRelease(payload) {
+    releaseQueue = releaseQueue
+      .then(() => releaseHandler.handle(payload))
+      .catch((err) => {
+        logger.child({ module: "release" }).error({ err }, "Release handler failed");
+      });
+    return releaseQueue;
+  }
+
   const webhookrelay = createWebhookrelayClient({
     config,
-    onRelease: (payload) => releaseHandler.handle(payload),
+    onRelease: (payload) => {
+      enqueueRelease(payload);
+    },
     logger: logger.child({ module: "webhookrelay" }),
   });
 
-  const app = createApp({ config, state, logger: logger.child({ module: "http" }), webhookrelay });
+  const app = createApp({
+    config,
+    state,
+    logger: logger.child({ module: "http" }),
+    webhookrelay,
+    githubDownload,
+    enqueueRelease,
+  });
 
   const server = app.listen(config.httpPort, "0.0.0.0", () => {
     logger.info({ port: config.httpPort }, "HTTP server listening");
