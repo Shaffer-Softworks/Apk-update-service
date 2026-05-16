@@ -148,6 +148,28 @@ async function reconnect() {
   }
 }
 
+async function syncRelease() {
+  const btn = $("syncReleaseBtn");
+  btn.disabled = true;
+  const prev = btn.textContent;
+  btn.textContent = "Syncing…";
+  try {
+    const res = await fetch(apiBase + "/sync-release", { method: "POST" });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.message || `HTTP ${res.status}`);
+    await loadState();
+    btn.textContent = "Synced";
+    setTimeout(() => {
+      btn.textContent = prev;
+      btn.disabled = false;
+    }, 2000);
+  } catch (err) {
+    alert(`Sync failed: ${err.message}`);
+    btn.textContent = prev;
+    btn.disabled = false;
+  }
+}
+
 document.addEventListener("click", (e) => {
   const t = e.target;
   if (!(t instanceof HTMLElement)) return;
@@ -163,6 +185,7 @@ document.addEventListener("click", (e) => {
 
 $("refreshBtn").addEventListener("click", loadState);
 $("reconnectBtn").addEventListener("click", reconnect);
+$("syncReleaseBtn").addEventListener("click", syncRelease);
 
 loadState();
 setInterval(loadState, 10_000);

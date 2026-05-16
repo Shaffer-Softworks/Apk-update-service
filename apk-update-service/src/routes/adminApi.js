@@ -6,7 +6,7 @@ const express = require("express");
 
 const SAFE_NAME = /^[A-Za-z0-9._-]+$/;
 
-function createRouter({ config, state, logger, webhookrelay }) {
+function createRouter({ config, state, logger, webhookrelay, githubDownload, enqueueRelease }) {
   const router = express.Router();
   router.use(express.json({ limit: "256kb" }));
 
@@ -31,6 +31,21 @@ function createRouter({ config, state, logger, webhookrelay }) {
     logger.info("Admin: webhookrelay reconnect requested");
     webhookrelay.reconnect();
     res.json({ ok: true });
+  });
+
+  router.post("/sync-release", async (_req, res) => {
+    if (!githubDownload?.fetchLatestReleasePayload || !enqueueRelease) {
+      return res.status(501).json({ error: "sync_not_configured" });
+    }
+    try {
+      logger.info("Admin: sync latest GitHub release requested");
+      const payload = await githubDownload.fetchLatestReleasePayload();
+      const result = await enqueueRelease(payload);
+      res.json({ ok: true, result });
+    } catch (err) {
+      logger.error({ err }, "Admin: sync-release failed");
+      res.status(500).json({ error: "sync_failed", message: err.message });
+    }
   });
 
   router.get("/files", async (_req, res) => {

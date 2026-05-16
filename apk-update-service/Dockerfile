@@ -7,7 +7,7 @@ ENV LANG=C.UTF-8 \
     APK_DIR=/data/apks \
     STATE_FILE=/data/state.json
 
-RUN apk add --no-cache nodejs npm
+RUN apk add --no-cache nodejs npm ca-certificates && update-ca-certificates
 
 WORKDIR /opt/app
 
